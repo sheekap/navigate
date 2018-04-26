@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"strconv"
+	"math/rand"
 
 	"github.com/Shopify/sarama"
         "github.com/golang/protobuf/proto"
@@ -14,10 +15,10 @@ const topic string = "mobile_sdk.app_created"
 
 func main() {
         app := SdkAppCreated{
-                BrandId: 456,
-                AccountId: 123,
-                Identifier: "ThisIsAnIdentifier",
-                Authentication: "AuthMethod",
+                BrandId: rand.Int31n(100),
+                AccountId: rand.Int31n(100),
+                Identifier: "This009IsAn12Identifier45",
+                Authentication: "jwt",
         }
 
         msg, err := proto.Marshal(&app)
