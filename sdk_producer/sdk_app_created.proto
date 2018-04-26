@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package main;
+
+import "google/protobuf/wrappers.proto";
+
+message SdkAppCreated {
+  google.protobuf.Int64Value brand_id = 1;
+  google.protobuf.Int64Value account_id = 2;
+  google.protobuf.StringValue identifier = 3;
+  google.protobuf.StringValue authentication = 4;
+}
