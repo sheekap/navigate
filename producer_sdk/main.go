@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-        // "os"
+	"strconv"
 
 	"github.com/Shopify/sarama"
         "github.com/golang/protobuf/proto"
@@ -14,13 +14,13 @@ const topic string = "mobile_sdk.app_created"
 
 func main() {
         app := SdkAppCreated{
-                BrandId: proto.Int64Value(456),
-                AccountId: proto.Int64Value(123),
-                Identifier: proto.StringValue("ThisIsAnIdentifier"),
-                Authentication: proto.StringValue("AuthMethod"),
+                BrandId: 456,
+                AccountId: 123,
+                Identifier: "ThisIsAnIdentifier",
+                Authentication: "AuthMethod",
         }
 
-        msg, err := proto.Marshal(app)
+        msg, err := proto.Marshal(&app)
 
         if err != nil {
                 fmt.Println(err)
@@ -29,7 +29,15 @@ func main() {
 	producer(msg)
 }
 
-func producer(msg string) {
+func producer(msg []byte) {
+	sdkApp := SdkAppCreated{}
+
+	if err := proto.Unmarshal(msg, &sdkApp); err != nil {
+		fmt.Println(err)
+	}
+
+	var message string = "brandId: " + strconv.Itoa(int(sdkApp.BrandId)) + ", accountId: " + strconv.Itoa(int(sdkApp.AccountId)) + ", identifier: " + sdkApp.Identifier + ", authentication: " + sdkApp.Authentication
+
 	producer, err := sarama.NewAsyncProducer(brokers, nil)
 
 	if err != nil {
@@ -44,5 +52,5 @@ func producer(msg string) {
 		}
 	}()
 
-	producer.Input() <- &sarama.ProducerMessage{Topic: topic, Key: nil, Value: sarama.StringEncoder(msg)}
+	producer.Input() <- &sarama.ProducerMessage{Topic: topic, Key: nil, Value: sarama.StringEncoder(message)}
 }
